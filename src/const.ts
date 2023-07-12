@@ -1,1 +1,1 @@
-export const Settings = { OffersCount: 200 } as const;
+export const Settings = { OffersCount: 5 } as const;

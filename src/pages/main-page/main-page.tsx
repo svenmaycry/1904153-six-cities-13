@@ -1,10 +1,10 @@
 import Card from '../../components/card/card';
 
 type MainPageProps = {
-  offersCount: number;
+  cardsCount: number;
 }
 
-function MainPage({ offersCount }: MainPageProps): JSX.Element {
+function MainPage({ cardsCount }: MainPageProps): JSX.Element {
   return (
     <div className="page page--gray page--main">
       <header className="header">
@@ -87,9 +87,7 @@ function MainPage({ offersCount }: MainPageProps): JSX.Element {
           <div className="cities__places-container container">
             <section className="cities__places places">
               <h2 className="visually-hidden">Places</h2>
-              <b className="places__found">
-                {offersCount} places to stay in Amsterdam
-              </b>
+              <b className="places__found">312 places to stay in Amsterdam</b>
               <form className="places__sorting" action="#" method="get">
                 <span className="places__sorting-caption">Sort by</span>
                 <span className="places__sorting-type" tabIndex={0}>
@@ -117,7 +115,7 @@ function MainPage({ offersCount }: MainPageProps): JSX.Element {
                 </ul>
               </form>
               <div className="cities__places-list places__list tabs__content">
-                {Array.from({ length: offersCount }, (_, i) => <Card key={i} />)}
+                {Array.from({ length: cardsCount }, (_, i) => <Card key={i} />)}
               </div>
             </section>
             <div className="cities__right-section">

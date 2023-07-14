@@ -1,4 +1,6 @@
-export const Settings = { cardsCount: 5 } as const;
+export const Settings = {
+  CardsCount: 5,
+} as const;
 
 export const AppRoute = {
   Root: '/',
@@ -6,3 +8,9 @@ export const AppRoute = {
   Login: '/login',
   Offer: '/offer',
 } as const;
+
+export enum AuthorizationStatus {
+  Auth = 'AUTH',
+  NoAuth = 'NO_AUTH',
+  Unknown = 'UNKNOWN',
+}

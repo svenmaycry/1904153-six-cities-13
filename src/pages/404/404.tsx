@@ -1,8 +1,12 @@
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
-function NotFoundPage(): JSX.Element {
+export function NotFound() {
   return (
     <>
+      <Helmet>
+        <title>404: Not found</title>
+      </Helmet>
       <h1>
         404.
         <br />
@@ -12,5 +16,3 @@ function NotFoundPage(): JSX.Element {
     </>
   );
 }
-
-export { NotFoundPage };

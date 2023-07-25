@@ -1,32 +1,41 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AppRoute, AuthorizationStatus } from '../../const';
-import { MainPage } from '../../pages/main-page/main-page';
-import { Favorites } from '../../pages/favorites-page/favorites-page';
+import { MainPage } from '../../pages/main/main';
+import { Favorites } from '../../pages/favorites/favorites';
 import { Login } from '../../pages/login-page/login-page';
-import { Offer } from '../../pages/offer-page/offer-page';
+import { Offer } from '../../pages/offer/offer';
 import { NotFound } from '../../pages/404/404';
 import { PrivateRoute } from '../private-route/private-route';
+import { OfferType } from '../types/offer';
+import { FullOfferType } from '../types/full-offer';
 
 
 type AppProps = {
   cardsCount: number;
+  offers: OfferType[];
+  fullOffers: FullOfferType[];
 }
 
-export function App({ cardsCount }: AppProps) {
+export function App({ cardsCount, offers, fullOffers }: AppProps) {
   return (
     <HelmetProvider>
       <BrowserRouter>
         <Routes>
           <Route
             path={AppRoute.Root}
-            element={<MainPage cardsCount={cardsCount} />}
+            element={
+              <MainPage
+                cardsCount={cardsCount}
+                offers={offers}
+              />
+            }
           />
           <Route
             path={AppRoute.Favorites}
             element={
-              <PrivateRoute authorizationStatus={AuthorizationStatus.NoAuth}>
-                <Favorites />
+              <PrivateRoute authorizationStatus={AuthorizationStatus.Auth}>
+                <Favorites offers={offers} />
               </PrivateRoute>
             }
           />
@@ -36,7 +45,7 @@ export function App({ cardsCount }: AppProps) {
           />
           <Route
             path={`${AppRoute.Offer}/:id`}
-            element={<Offer />}
+            element={<Offer fullOffers={fullOffers} offers={offers} />}
           />
           <Route
             path="*"

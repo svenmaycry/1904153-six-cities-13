@@ -3,7 +3,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import { MainPage } from '../../pages/main/main';
 import { Favorites } from '../../pages/favorites/favorites';
-import { Login } from '../../pages/login-page/login-page';
+import { Login } from '../../pages/login/login';
 import { Offer } from '../../pages/offer/offer';
 import { NotFound } from '../../pages/404/404';
 import { PrivateRoute } from '../private-route/private-route';
@@ -12,12 +12,11 @@ import { FullOfferType } from '../types/full-offer';
 
 
 type AppProps = {
-  cardsCount: number;
   offers: OfferType[];
   fullOffers: FullOfferType[];
 }
 
-export function App({ cardsCount, offers, fullOffers }: AppProps) {
+export function App({ offers, fullOffers }: AppProps) {
   return (
     <HelmetProvider>
       <BrowserRouter>
@@ -26,7 +25,6 @@ export function App({ cardsCount, offers, fullOffers }: AppProps) {
             path={AppRoute.Root}
             element={
               <MainPage
-                cardsCount={cardsCount}
                 offers={offers}
               />
             }

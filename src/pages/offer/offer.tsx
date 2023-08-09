@@ -15,21 +15,24 @@ import { fetchNearbyOffers, fetchOffer, fetchReviews } from '../../store/api-act
 import { useEffect } from 'react';
 import { LoadingScreen } from '../loading-screen/loading-screen';
 import * as selectors from '../../store/selectors';
+import { NotFound } from '../404/404';
 
 export function Offer() {
   const [selectedCard, setSelectedCard] = useState<OfferType | undefined>(undefined);
   const dispatch = useAppDispatch();
   const offerId = useParams().id;
-
+  const offers = useAppSelector(selectors.offers);
+  const isIdExist = offers?.some((offer) => offer.id === offerId);
 
   useEffect(() => {
+    if (!isIdExist) {
+      return;
+    }
     dispatch(fetchOffer({ id: offerId }));
     dispatch(fetchNearbyOffers({ id: offerId }));
     dispatch(fetchReviews({ id: offerId }));
-  }, [offerId, dispatch]
+  }, [isIdExist, offerId, dispatch]
   );
-
-  const offers = useAppSelector(selectors.offers);
 
   const offer = useAppSelector(selectors.fullOffer);
   const nearbyOffers = useAppSelector(selectors.nearbyOffers);
@@ -66,7 +69,7 @@ export function Offer() {
     setSelectedCard(currentCard);
   };
 
-  return (
+  return !isIdExist ? <NotFound /> : (
     <div className="page">
       <Helmet>
         <title>Offer</title>

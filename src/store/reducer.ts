@@ -4,7 +4,7 @@ import {
   setActiveId, setOfferLoadStatus, setOffersLoadStatus, loadNearbyOffers,
   loadReviews, setNearbyOffersLoadStatus, setReviewsLoadStatus, sortOffersByHighPrice,
   sortOffersByLowPrice, sortOffersByTopRated, setError
-} from './action';
+} from './actions';
 import { OfferType } from '../components/types/offer';
 import { FullOfferType } from '../components/types/full-offer';
 import { AuthorizationStatus } from '../const';

@@ -35,3 +35,5 @@ export const sortOffersByLowPrice = createAction('sortOffersByLowPrice');
 export const sortOffersByHighPrice = createAction('sortOffersByHighPrice');
 
 export const sortOffersByTopRated = createAction('sortOffersByTopRated');
+
+export const setError = createAction('setError', (error: string | null) => ({ payload: error }));

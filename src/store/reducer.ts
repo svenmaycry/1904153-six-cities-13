@@ -1,10 +1,10 @@
 import { createReducer } from '@reduxjs/toolkit';
 import {
-  setActiveCity, setSortType, setOffers, loadOffers, loadOffer, requireAuthorization,
+  setActiveCity, setSortType, setOffers, loadOffers, loadOffer, setAuthorization,
   setActiveId, setOfferLoadStatus, setOffersLoadStatus, loadNearbyOffers,
   loadReviews, setNearbyOffersLoadStatus, setReviewsLoadStatus, sortOffersByHighPrice,
   sortOffersByLowPrice, sortOffersByTopRated
-} from './action';
+} from './actions';
 import { OfferType } from '../components/types/offer';
 import { FullOfferType } from '../components/types/full-offer';
 import { AuthorizationStatus } from '../const';
@@ -60,7 +60,7 @@ export const reducer = createReducer(initialState, (builder) => {
     .addCase(loadOffer, (state, action) => {
       state.fullOffer = action.payload;
     })
-    .addCase(requireAuthorization, (state, action) => {
+    .addCase(setAuthorization, (state, action) => {
       state.authorizationStatus = action.payload;
     })
     .addCase(setOfferLoadStatus, (state, action) => {

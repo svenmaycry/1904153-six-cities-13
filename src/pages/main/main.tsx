@@ -1,16 +1,17 @@
 import { OffersList } from '../../components/offers-list/offers-list';
 import { Helmet } from 'react-helmet-async';
 import { Header } from '../../components/header/header';
-import { SortOptions } from '../../components/sort-options/sortOptions';
+import { SortOptions } from '../../components/sort-options/sort-options';
 import { OfferType } from '../../components/types/offer';
 import { Map } from '../../components/map/map';
 import { useState, memo, useCallback } from 'react';
 import { CititesList } from '../../components/cities-list/cities-list';
 import { useAppSelector } from '../../hooks/useAppSelector/useAppSelector';
 import { LoadingScreen } from '../loading-screen/loading-screen';
-import * as selectors from '../../store/selectors';
 import { createSelector } from '@reduxjs/toolkit';
 import { AuthStatus } from '../../const';
+import { getOffers, getOffersLoadStatus, getActiveCity } from '../../store/offers-process/selectors';
+import { getAuthStatus } from '../../store/user-process.ts/selectors';
 
 function MainPageComponent() {
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
@@ -19,13 +20,13 @@ function MainPageComponent() {
     setSelectedId(id);
   }, []);
 
-  const activeCityName = useAppSelector(selectors.activeCity);
-  const offers = useAppSelector(selectors.offers);
-  const isOffersLoading = useAppSelector(selectors.isOfferLoading);
-  const filteredOffers = createSelector(selectors.offers, (state) => state?.filter((offer) => offer.city.name === activeCityName));
+  const activeCityName = useAppSelector(getActiveCity);
+  const offers = useAppSelector(getOffers);
+  const isOffersLoading = useAppSelector(getOffersLoadStatus);
+  const filteredOffers = createSelector(getOffers, (state) => state?.filter((offer) => offer.city.name === activeCityName));
 
   const offersByCity = useAppSelector(filteredOffers) as OfferType[];
-  const authStatus = useAppSelector(selectors.authorizationStatus);
+  const authStatus = useAppSelector(getAuthStatus);
 
   if (isOffersLoading || authStatus === AuthStatus.Unknown || offers === null) {
     return (

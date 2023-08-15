@@ -13,32 +13,32 @@ import { useAppDispatch } from '../../hooks/useAppDispatch/useAppDispatch';
 import { fetchNearbyOffers, fetchFullOffer } from '../../store/api-actions';
 import { LoadingScreen } from '../loading-screen/loading-screen';
 import { NotFound } from '../404/404';
-import { setActiveId } from '../../store/offers-process/offers-process';
+import { setActiveId, setCurrentOffer } from '../../store/offers-process/offers-process';
 import { RATING_COEFFICIENT } from '../../const';
-import { OfferType } from '../../components/types/offer';
-import { getOffers, getOffersLoadStatus, getFullOffer, getFullOfferLoadStatus } from '../../store/offers-process/selectors';
+import { getOffers, getCurrentOffer, getOffersLoadStatus, getFullOffer, getFullOfferLoadStatus } from '../../store/offers-process/selectors';
 import { getNearbyOffers, getNearbyOffersLoadStatus } from '../../store/nearby-offers-process/selectors';
 
-export function Offer() {
+export const Offer = () => {
   const dispatch = useAppDispatch();
-  const offerId = useParams().id as string;
+  const offerId = useParams().id;
   const offers = useAppSelector(getOffers);
   const isOffersLoading = useAppSelector(getOffersLoadStatus);
   const isIdExist = offers?.some((offer) => offer.id === offerId);
 
   useEffect(() => {
-    if (!isIdExist) {
+    if (!isIdExist || offerId === undefined) {
       return;
     }
     dispatch(fetchFullOffer({ id: offerId }));
     dispatch(fetchNearbyOffers({ id: offerId }));
     dispatch(setActiveId(offerId));
+    dispatch(setCurrentOffer());
   }, [isIdExist, offerId, dispatch]
   );
 
   const offer = useAppSelector(getFullOffer);
   const loadedNearbyOffers = useAppSelector(getNearbyOffers);
-
+  const currentOffer = useAppSelector(getCurrentOffer);
 
   const isOfferLoading = useAppSelector(getFullOfferLoadStatus);
   const isNearbyOfferLoading = useAppSelector(getNearbyOffersLoadStatus);
@@ -52,11 +52,14 @@ export function Offer() {
     );
   }
 
-  if (isPageLoading || isSomethingMissingFromServer) {
+  if (isPageLoading || isSomethingMissingFromServer || currentOffer === null) {
     return (
       <LoadingScreen />
     );
   }
+
+  const currentCity = loadedNearbyOffers[0].city;
+  const nearbyOffers = [...loadedNearbyOffers, currentOffer];
 
   const { bedrooms, city, description, goods, id, host, images, isFavorite, isPremium, maxAdults, price, rating, title, type } = offer;
 
@@ -65,10 +68,6 @@ export function Offer() {
       return { fill: '#4481c3', stroke: '#4481c3' };
     }
   };
-
-  const currentCity = loadedNearbyOffers[0].city;
-  const currentOffer = offers.find((item) => item.id === offerId) as OfferType;
-  const nearbyOffers = [...loadedNearbyOffers, currentOffer];
 
   return (
     <div className="page">
@@ -147,4 +146,4 @@ export function Offer() {
       </main>
     </div>
   );
-}
+};

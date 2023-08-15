@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Header } from '../../components/header/header';
@@ -39,12 +39,17 @@ export const Offer = () => {
   const offer = useAppSelector(getFullOffer);
   const loadedNearbyOffers = useAppSelector(getNearbyOffers);
   const currentOffer = useAppSelector(getCurrentOffer);
+  const nearbyOffers = useMemo(() => {
+    if (currentOffer === null) {
+      return;
+    }
+    return [...loadedNearbyOffers, currentOffer];
+  }, [loadedNearbyOffers, currentOffer]);
 
   const isOfferLoading = useAppSelector(getFullOfferLoadStatus);
   const isNearbyOfferLoading = useAppSelector(getNearbyOffersLoadStatus);
 
   const isPageLoading = isOfferLoading || isNearbyOfferLoading;
-  const isSomethingMissingFromServer = offer === null || offers === null || loadedNearbyOffers === null;
 
   if (!isIdExist && !isOffersLoading) {
     return (
@@ -52,14 +57,11 @@ export const Offer = () => {
     );
   }
 
-  if (isPageLoading || isSomethingMissingFromServer || currentOffer === null) {
+  if (isPageLoading || offer === null || nearbyOffers === undefined) {
     return (
       <LoadingScreen />
     );
   }
-
-  const currentCity = loadedNearbyOffers[0].city;
-  const nearbyOffers = [...loadedNearbyOffers, currentOffer];
 
   const { bedrooms, city, description, goods, id, host, images, isFavorite, isPremium, maxAdults, price, rating, title, type } = offer;
 
@@ -132,7 +134,7 @@ export const Offer = () => {
             </div>
           </div>
 
-          <Map isMain={false} city={currentCity} offers={nearbyOffers} selectedId={offerId} />
+          <Map isMain={false} city={city} offers={nearbyOffers} selectedId={offerId} />
 
         </section>
         <div className="container">

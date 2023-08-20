@@ -15,6 +15,7 @@ type OffersProcessType = {
   isOffersLoading: boolean;
   favOffers: OfferType[];
   isFavOffersLoading: boolean;
+  hasError: boolean;
 }
 
 const initialState: OffersProcessType = {
@@ -29,6 +30,7 @@ const initialState: OffersProcessType = {
   isOffersLoading: true,
   favOffers: [],
   isFavOffersLoading: true,
+  hasError: false,
 };
 
 export const offersProcessSlice = createSlice({
@@ -66,6 +68,9 @@ export const offersProcessSlice = createSlice({
     setFavOffersLoadStatus: (state, action: PayloadAction<boolean>) => {
       state.isFavOffersLoading = action.payload;
     },
+    setError: (state, action: PayloadAction<boolean>) => {
+      state.hasError = action.payload;
+    },
     sortOffers: (state, action: PayloadAction<SortTypeValues>) => {
       state.activeSortType = action.payload;
       switch (state.activeSortType) {
@@ -86,6 +91,6 @@ export const offersProcessSlice = createSlice({
   }
 });
 
-export const { setActiveCity, setActiveId, setCurrentOffer,
+export const { setActiveCity, setActiveId, setCurrentOffer, setError,
   setOffers, setOffersBackup, setOffersLoadStatus, setFullOffer,
   setFullOfferLoadStatus, setFavOffers, sortOffers, setFavOffersLoadStatus } = offersProcessSlice.actions;

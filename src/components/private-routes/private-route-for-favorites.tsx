@@ -10,11 +10,10 @@ type PrivateRouteProps = {
 export function PrivateRouteForFavorites({ authorizationStatus, children }: PrivateRouteProps) {
   if (authorizationStatus === AuthStatus.Unknown) {
     return <LoadingScreen />;
-  } else if (authorizationStatus === AuthStatus.Auth) {
-    return (
-      authorizationStatus === AuthStatus.Auth
-        ? children
-        : <Navigate to={AppRoute.Login} />
-    );
   }
+  return (
+    authorizationStatus === AuthStatus.Auth
+      ? children
+      : <Navigate to={AppRoute.Login} />
+  );
 }

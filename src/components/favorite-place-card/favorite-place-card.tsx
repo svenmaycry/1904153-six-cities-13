@@ -1,19 +1,17 @@
 import { OfferType } from '../types/offer';
 import { Link } from 'react-router-dom';
-import { AppRoute } from '../../const';
-import { RATING_COEFFICIENT } from '../../const';
+import { AppRoute, RATING_COEFFICIENT } from '../../const';
 import { useAppDispatch } from '../../hooks/useAppDispatch/useAppDispatch';
-import { changeFavStatus } from '../../store/api-actions';
-import { fetchFavOffers } from '../../store/api-actions';
+import { changeFavStatus, fetchFavOffers } from '../../store/api-actions';
 
 type FavoritePlaceCardType = {
   cardByCity: OfferType;
 }
 
-export function FavoritePlaceCard({ cardByCity }: FavoritePlaceCardType) {
+export const FavoritePlaceCard = ({ cardByCity }: FavoritePlaceCardType) => {
   const { id, isFavorite, isPremium, previewImage, price, rating, title, type } = cardByCity;
   const dispatch = useAppDispatch();
-  const setUnfav = () => {
+  const deleteFavStatus = () => {
     (async () => {
       try {
         await dispatch(changeFavStatus(
@@ -28,8 +26,9 @@ export function FavoritePlaceCard({ cardByCity }: FavoritePlaceCardType) {
   };
 
   const onButtonClick = () => {
-    setUnfav();
+    deleteFavStatus();
   };
+
   return (
     <article className="favorites__card place-card">
       {isPremium ? (
@@ -69,4 +68,4 @@ export function FavoritePlaceCard({ cardByCity }: FavoritePlaceCardType) {
       </div>
     </article>
   );
-}
+};

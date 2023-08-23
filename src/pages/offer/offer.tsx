@@ -10,18 +10,21 @@ import { OffersList } from '../../components/offers-list/offers-list';
 import { Map } from '../../components/map/map';
 import { useAppSelector } from '../../hooks/useAppSelector/useAppSelector';
 import { useAppDispatch } from '../../hooks/useAppDispatch/useAppDispatch';
-import { fetchNearbyOffers, fetchFullOffer } from '../../store/api-actions';
+import { fetchNearbyOffers, fetchFullOffer, changeFavStatus } from '../../store/api-actions';
 import { LoadingScreen } from '../loading-screen/loading-screen';
 import { NotFound } from '../404/404';
 import { setActiveId, setCurrentOffer } from '../../store/offers-process/offers-process';
-import { RATING_COEFFICIENT } from '../../const';
 import { getOffers, getCurrentOffer, getOffersLoadStatus, getFullOffer, getFullOfferLoadStatus } from '../../store/offers-process/selectors';
 import { getNearbyOffers, getNearbyOffersLoadStatus } from '../../store/nearby-offers-process/selectors';
+import { getAuthStatus } from '../../store/user-process.ts/selectors';
+import { AuthStatus, AppRoute, RATING_COEFFICIENT } from '../../const';
+import { redirectToRoute } from '../../store/actions';
 
 export const Offer = () => {
   const dispatch = useAppDispatch();
   const offerId = useParams().id;
   const offers = useAppSelector(getOffers);
+  const authStatus = useAppSelector(getAuthStatus);
   const isOffersLoading = useAppSelector(getOffersLoadStatus);
   const isIdExist = offers?.some((offer) => offer.id === offerId);
 
@@ -33,7 +36,7 @@ export const Offer = () => {
     dispatch(fetchNearbyOffers({ id: offerId }));
     dispatch(setActiveId(offerId));
     dispatch(setCurrentOffer());
-  }, [isIdExist, offerId, dispatch]
+  }, [isIdExist, offerId, dispatch, authStatus]
   );
 
   const offer = useAppSelector(getFullOffer);
@@ -65,10 +68,28 @@ export const Offer = () => {
 
   const { bedrooms, city, description, goods, id, host, images, isFavorite, isPremium, maxAdults, price, rating, title, type } = offer;
 
-  const getFavoriteStyles = (isFav: boolean) => {
-    if (isFav) {
-      return { fill: '#4481c3', stroke: '#4481c3' };
+  const setFav = () => {
+    if (authStatus !== AuthStatus.Auth) {
+      dispatch(redirectToRoute(AppRoute.Login));
+      return;
     }
+
+    (async () => {
+      try {
+        await dispatch(changeFavStatus(
+          {
+            id,
+            status: isFavorite ? 0 : 1,
+          }));
+      } finally {
+        await dispatch(fetchFullOffer({ id: offerId }));
+        await dispatch(fetchNearbyOffers({ id: offerId }));
+      }
+    })();
+  };
+
+  const onButtonClick = () => {
+    setFav();
   };
 
   return (
@@ -76,9 +97,7 @@ export const Offer = () => {
       <Helmet>
         <title>Offer</title>
       </Helmet>
-
       <Header />
-
       <main className="page__main page__main--offer">
         <section className="offer">
           <div className="offer__gallery-container container">
@@ -92,13 +111,12 @@ export const Offer = () => {
                 <div className="offer__mark" >
                   <span>Premium</span>
                 </div>) : null}
-
               <div className="offer__name-wrapper">
                 <h1 className="offer__name">
                   {title}
                 </h1>
-                <button className="offer__bookmark-button button" type="button">
-                  <svg className="offer__bookmark-icon" width={31} height={33} style={getFavoriteStyles(isFavorite)}>
+                <button className={`offer__bookmark-button ${isFavorite ? 'offer__bookmark-button--active' : ''}  button`} type="button" onClick={onButtonClick} >
+                  <svg className="offer__bookmark-icon" width={31} height={33}>
                     <use xlinkHref="#icon-bookmark" />
                   </svg>
                   <span className="visually-hidden">To bookmarks</span>
@@ -106,7 +124,7 @@ export const Offer = () => {
               </div>
               <div className="offer__rating rating">
                 <div className="offer__stars rating__stars">
-                  <span style={{ width: `${rating * RATING_COEFFICIENT}%` }} />
+                  <span style={{ width: `${Math.ceil(rating) * RATING_COEFFICIENT}%` }} />
                   <span className="visually-hidden">Rating</span>
                 </div>
                 <span className="offer__rating-value rating__value">{rating}</span>
@@ -124,18 +142,12 @@ export const Offer = () => {
                 <b className="offer__price-value">€{price}</b>
                 <span className="offer__price-text">&nbsp;night</span>
               </div>
-
               <Goods goods={goods} />
-
               <Host host={host} description={description} />
-
               <Reviews />
-
             </div>
           </div>
-
           <Map isMain={false} city={city} offers={nearbyOffers} selectedId={offerId} />
-
         </section>
         <div className="container">
           <section className="near-places places">

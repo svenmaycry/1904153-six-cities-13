@@ -1,18 +1,21 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { NameSpace } from '../../const';
+import { NameSpace, SortType, SortTypeValues } from '../../const';
 import { OfferType } from '../../components/types/offer';
 import { FullOfferType } from '../../components/types/full-offer';
 
 type OffersProcessType = {
   activeCity: string;
   activeId: string | null;
-  activeSortType: string;
+  activeSortType: SortTypeValues;
   currentOffer: OfferType | null;
   offers: OfferType[];
-  offersBackup: OfferType[] | null;
+  offersBackup: OfferType[];
   fullOffer: FullOfferType | null;
   isFullOfferLoading: boolean;
   isOffersLoading: boolean;
+  favOffers: OfferType[];
+  isFavOffersLoading: boolean;
+  hasError: boolean;
 }
 
 const initialState: OffersProcessType = {
@@ -21,10 +24,13 @@ const initialState: OffersProcessType = {
   activeSortType: 'Popular',
   currentOffer: null,
   offers: [],
-  offersBackup: null,
+  offersBackup: [],
   fullOffer: null,
   isFullOfferLoading: false,
-  isOffersLoading: false,
+  isOffersLoading: true,
+  favOffers: [],
+  isFavOffersLoading: true,
+  hasError: false,
 };
 
 export const offersProcessSlice = createSlice({
@@ -37,14 +43,9 @@ export const offersProcessSlice = createSlice({
     setActiveId: (state, action: PayloadAction<string | null>) => {
       state.activeId = action.payload;
     },
-    setSortType: (state, action: PayloadAction<string>) => {
-      state.activeSortType = action.payload;
-    },
     setCurrentOffer: (state) => {
-      if (state.offers !== null) {
-        const foundOffer = state.offers.find((item) => item.id === state.activeId);
-        state.currentOffer = foundOffer !== undefined ? foundOffer : null;
-      }
+      const foundOffer = state.offers.find((item) => item.id === state.activeId);
+      state.currentOffer = foundOffer !== undefined ? foundOffer : null;
     },
     setOffers: (state, action: PayloadAction<OfferType[]>) => {
       state.offers = action.payload;
@@ -61,28 +62,35 @@ export const offersProcessSlice = createSlice({
     setFullOfferLoadStatus: (state, action: PayloadAction<boolean>) => {
       state.isFullOfferLoading = action.payload;
     },
-    sortOffersByLowPrice: (state) => {
-      if (state.offers === null) {
-        return;
-      }
-      state.offers = state.offers.sort((a, b) => a.price - b.price);
+    setFavOffers: (state, action: PayloadAction<OfferType[]>) => {
+      state.favOffers = action.payload;
     },
-    sortOffersByHighPrice: (state) => {
-      if (state.offers === null) {
-        return;
-      }
-      state.offers = state.offers.sort((a, b) => b.price - a.price);
+    setFavOffersLoadStatus: (state, action: PayloadAction<boolean>) => {
+      state.isFavOffersLoading = action.payload;
     },
-    sortOffersByTopRated: (state) => {
-      if (state.offers === null) {
-        return;
+    setError: (state, action: PayloadAction<boolean>) => {
+      state.hasError = action.payload;
+    },
+    sortOffers: (state, action: PayloadAction<SortTypeValues>) => {
+      state.activeSortType = action.payload;
+      switch (state.activeSortType) {
+        case SortType.Popular:
+          state.offers = state.offersBackup;
+          break;
+        case SortType.PriceToHigh:
+          state.offers = state.offers.sort((a, b) => a.price - b.price);
+          break;
+        case SortType.PriceToLow:
+          state.offers = state.offers.sort((a, b) => b.price - a.price);
+          break;
+        case SortType.TopRated:
+          state.offers = state.offers.sort((a, b) => b.rating - a.rating);
+          break;
       }
-      state.offers = state.offers.sort((a, b) => b.rating - a.rating);
-    }
+    },
   }
 });
 
-export const { setActiveCity, setActiveId, setSortType, setCurrentOffer,
+export const { setActiveCity, setActiveId, setCurrentOffer, setError,
   setOffers, setOffersBackup, setOffersLoadStatus, setFullOffer,
-  setFullOfferLoadStatus, sortOffersByHighPrice,
-  sortOffersByLowPrice, sortOffersByTopRated } = offersProcessSlice.actions;
+  setFullOfferLoadStatus, setFavOffers, sortOffers, setFavOffersLoadStatus } = offersProcessSlice.actions;

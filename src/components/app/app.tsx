@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AppRoute } from '../../const';
@@ -9,13 +10,29 @@ import { NotFound } from '../../pages/404/404';
 import { PrivateRouteForFavorites } from '../private-routes/private-route-for-favorites';
 import { PrivateRouteForLogin } from '../private-routes/private-route-for-login';
 import { useAppSelector } from '../../hooks/useAppSelector/useAppSelector';
+import { useAppDispatch } from '../../hooks/useAppDispatch/useAppDispatch';
+import { fetchOffers, checkAuth } from '../../store/api-actions';
 import { getAuthStatus } from '../../store/user-process.ts/selectors';
 import { HistoryRouter } from '../history-route/history-route';
 import { browserHistory } from '../../browser-history';
+import { hasError } from '../../store/offers-process/selectors';
+import { ErrorScreen } from '../error-screen/error-screen';
 
-export function App() {
+export const App = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchOffers());
+    dispatch(checkAuth());
+  }, [dispatch]);
 
   const authStatus = useAppSelector(getAuthStatus);
+  const isError = useAppSelector(hasError);
+
+  if (isError) {
+    return (
+      <ErrorScreen />);
+  }
 
   return (
     <HelmetProvider>
@@ -55,4 +72,4 @@ export function App() {
       </HistoryRouter>
     </HelmetProvider>
   );
-}
+};

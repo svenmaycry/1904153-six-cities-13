@@ -1,7 +1,7 @@
 {
   "name": "6 cities",
   "version": "13.0.0",
-  "homepage": "https://six-cities-woad.vercel.app/",
+  "homepage": "https://six-cities-sigma-five.vercel.app/",
   "type": "module",
   "scripts": {
     "start": "vite",
